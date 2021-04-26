@@ -1,0 +1,113 @@
+<div class="page-head">
+  <div class="d-flex flex-column">
+    <ul class="breadcrumb">
+      <li class="breadcrumb-item"><a routerLink="/">Ana Sayfa</a></li>
+      <li class="breadcrumb-item"><a routerLink="../liste">table</a></li>
+    </ul>
+  </div>
+</div>
+<div class="page-content">
+  <div class="container-fluid mt-3">
+    <div class="row">
+      <div class="col-12">
+        <div class="bg-white fix-shadow fix-radius w-100 p-3">
+          <div class="form-row mb-2">
+
+
+          </div>
+          <table class="table table-responsive-xl mt-3 table-hover table-borderless table-striped">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Title</th>
+                <th>Assignee</th>
+                <th style="cursor:pointer" (click)="this.sort()">Status</th>
+                <th>Actions</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let todo of this.todos  | paginate: { itemsPerPage:size, currentPage: p } ; let i=index">
+                <th scope="row">{{todo?.id}}</th>
+                <td>{{todo?.title}}</td>
+                <td>{{this.userSearch(todo?.userId)}}</td>
+                <td>{{(todo?.completed) ? 'Done' : 'In Progress'}}</td>
+                <td>
+                  <button type="button" class="btn btn-warning" data-toggle="modal"
+                    [attr.data-target]="'#updateModal'+todo.id">Edit</button>
+                  <button type="button" class="btn btn-danger ml-3" data-toggle="modal"
+                    [attr.data-target]="'#deleteModal'+todo.id">Delete</button>
+                </td>
+
+
+              </tr>
+            </tbody>
+          </table>
+
+          <pagination-controls class="center-text" style="display: flex;
+            justify-content: center;" (pageChange)="p = $event"></pagination-controls>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+
+<div *ngFor="let item of this.todos" class="modal fade" [id]="'deleteModal'+item.id" tabindex="-1" role="dialog"
+  aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header" style="background: indianred">
+        <h5 class="modal-title" id="deleteModalLabel">{{item.title}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <span style="font-weight: 500">{{item.id}},</span> 
+        You are making changes on it
+      </div>
+      <h6 class="ml-3">Are you sure you want to delete ?</h6>
+      
+      <div class="modal-footer">
+        <button type="button" (click)="this.delete(item.id)"  class="btn btn-secondary"
+          data-dismiss="modal">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngFor="let item of this.todos" class="modal fade" [id]="'updateModal'+item.id" tabindex="-1" role="dialog"
+  aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header" style="background: #FFA000">
+        <h5 class="modal-title" id="deleteModalLabel">{{item.title}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        {{item.id}}
+        You are making changes on it
+      </div>
+      <div class="input-group mb-3">
+        <div class="input-group-prepend">
+          <div class="input-group-text">
+            <input (change)="fieldsChange($event)"  
+             type="checkbox" [checked]="item.completed"  [(ngModel)]="item.completed" aria-label="Checkbox for following text input">
+          </div>
+        </div>
+        <input (change)="this.inputValue($event)" [(ngModel)]="item.title" value="{{item?.title}}" type="text" class="form-control"
+          aria-label="Text input with checkbox">
+      </div>
+      <div class="modal-footer">
+        <button type="button" (click)="this.update(item.id)"  class="btn btn-secondary"
+          data-dismiss="modal">Save</button>
+        
+      </div>
+    </div>
+  </div>
+</div>
