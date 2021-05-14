@@ -1,8 +1,8 @@
 <div class="page-head">
   <div class="d-flex flex-column">
     <ul class="breadcrumb">
-      <li class="breadcrumb-item"><a routerLink="/">Ana Sayfa</a></li>
-      <li class="breadcrumb-item"><a routerLink="../liste">table</a></li>
+      <li class="breadcrumb-item"><a routerLink="/home">Home</a></li>
+      <li class="breadcrumb-item"><a routerLink="../liste">Table</a></li>
     </ul>
   </div>
 </div>
@@ -10,104 +10,111 @@
   <div class="container-fluid mt-3">
     <div class="row">
       <div class="col-12">
-        <div class="bg-white fix-shadow fix-radius w-100 p-3">
+        <div class="bg-white fix-shadow fix-radius w-100 p-5">
           <div class="form-row mb-2">
-
-
           </div>
           <table class="table table-responsive-xl mt-3 table-hover table-borderless table-striped">
             <thead>
               <tr>
-                <th>#</th>
+                <th>Id</th>
                 <th>Title</th>
                 <th>Assignee</th>
-                <th style="cursor:pointer" (click)="this.sort()">Status</th>
+                <th style="cursor:pointer" >
+                    <mat-icon (click)="this.sort(true)">expand_more</mat-icon>
+                    <mat-icon (click)="this.sort(false)">expand_less</mat-icon>
+                </th>
                 <th>Actions</th>
                 <th></th>
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let todo of this.todos  | paginate: { itemsPerPage:size, currentPage: p } ; let i=index">
+              <tr *ngFor="let todo of this.todos  | paginate: { itemsPerPage:size, currentPage: p }  ; let i=index">
                 <th scope="row">{{todo?.id}}</th>
                 <td>{{todo?.title}}</td>
                 <td>{{this.userSearch(todo?.userId)}}</td>
                 <td>{{(todo?.completed) ? 'Done' : 'In Progress'}}</td>
                 <td>
-                  <button type="button" class="btn btn-warning" data-toggle="modal"
-                    [attr.data-target]="'#updateModal'+todo.id">Edit</button>
-                  <button type="button" class="btn btn-danger ml-3" data-toggle="modal"
-                    [attr.data-target]="'#deleteModal'+todo.id">Delete</button>
+                    <button mat-mini-fab data-toggle="modal" (click)="this.selectedItem =todo"
+                      [attr.data-target]="'#updateModal'" mat-fab color="primary" aria-label="Example icon button with a delete icon">
+                        <mat-icon>edit</mat-icon>
+                    </button>
+                    <button mat-mini-fab data-toggle="modal" class="ml-2" (click)="this.selectedItem =todo"
+                      [attr.data-target]="'#deleteModal'" mat-fab color="warn" aria-label="Example icon button with a delete icon">
+                        <mat-icon>delete</mat-icon>
+                    </button>
                 </td>
-
-
               </tr>
             </tbody>
           </table>
-
           <pagination-controls class="center-text" style="display: flex;
             justify-content: center;" (pageChange)="p = $event"></pagination-controls>
         </div>
       </div>
-
     </div>
   </div>
-
 </div>
 
 
-<div *ngFor="let item of this.todos" class="modal fade" [id]="'deleteModal'+item.id" tabindex="-1" role="dialog"
+<div  class="modal fade" [id]="'deleteModal'" tabindex="-1" role="dialog"
   aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
+  <div class="modal-dialog modal-dialog-centered" role="document"  *ngIf="this.selectedItem">
     <div class="modal-content">
-      <div class="modal-header" style="background: indianred">
-        <h5 class="modal-title" id="deleteModalLabel">{{item.title}}</h5>
+      <div class="modal-header" >
+        <h5 class="modal-title display-2" id="deleteModalLabel" >Delete</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-        <span style="font-weight: 500">{{item.id}},</span> 
+        <span style="font-weight: 500">{{this.selectedItem.id}},</span> 
         You are making changes on it
       </div>
       <h6 class="ml-3">Are you sure you want to delete ?</h6>
       
       <div class="modal-footer">
-        <button type="button" (click)="this.delete(item.id)"  class="btn btn-secondary"
+        <button type="button" (click)="this.delete(this.selectedItem.id)"  class="btn btn-secondary"
           data-dismiss="modal">Delete</button>
       </div>
     </div>
   </div>
 </div>
 
-<div *ngFor="let item of this.todos" class="modal fade" [id]="'updateModal'+item.id" tabindex="-1" role="dialog"
+
+<div  class="modal fade" [id]="'updateModal'" tabindex="-1" role="dialog"
   aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
+  <div class="modal-dialog modal-dialog-centered" role="document" *ngIf="this.selectedItem">
     <div class="modal-content">
-      <div class="modal-header" style="background: #FFA000">
-        <h5 class="modal-title" id="deleteModalLabel">{{item.title}}</h5>
+      <div class="modal-header" >
+        <h3 class="modal-title" id="deleteModalLabel">Edit</h3>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
+
       <div class="modal-body">
-        {{item.id}}
+        {{this.selectedItem?.id}}
         You are making changes on it
       </div>
-      <div class="input-group mb-3">
-        <div class="input-group-prepend">
-          <div class="input-group-text">
-            <input (change)="fieldsChange($event)"  
-             type="checkbox" [checked]="item.completed"  [(ngModel)]="item.completed" aria-label="Checkbox for following text input">
-          </div>
-        </div>
-        <input (change)="this.inputValue($event)" [(ngModel)]="item.title" value="{{item?.title}}" type="text" class="form-control"
-          aria-label="Text input with checkbox">
-      </div>
-      <div class="modal-footer">
-        <button type="button" (click)="this.update(item.id)"  class="btn btn-secondary"
-          data-dismiss="modal">Save</button>
+
+      <section class="example-section">
+        <mat-checkbox class="example-margin ml-3"  [checked]="this.selectedItem?.completed"  [(ngModel)]="this.selectedItem.completed"></mat-checkbox>
+        <mat-form-field class="example-form-field ml-4">
+          <mat-label>Change Value</mat-label>
+          <input matInput type="text"  [(ngModel)]="this.selectedItem.title" value="{{this.selectedItem?.title}}">
+          <button mat-button *ngIf="this.selectedItem.title" matSuffix mat-icon-button aria-label="Clear" (click)="this.selectedItem.title=''">
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-form-field>
+      </section>
+      
+          <div class="modal-footer">
+          <button mat-raised-button color="primary" data-dismiss="modal"  (click)="this.update(this.selectedItem?.id)">Save</button>
         
       </div>
     </div>
   </div>
 </div>
+
+
+
+

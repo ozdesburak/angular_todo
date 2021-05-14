@@ -33,7 +33,7 @@ export class RequestService {
     const url = path
     return this.http.get<any>(url).pipe(
       map((res: any) => {
-        console.log(res);
+        // console.log(res);
         return res;
       }),
       catchError(<T>(error: any, result?: T) => {
@@ -51,12 +51,6 @@ export class RequestService {
     return this.http.delete<any>(url)
   }
   
-  private extractData(res: Response) {
-    
-    let body = res.json();
-    //console.log(body);
-    return body || { };
-  }
 
   private handleError (error: Response | any) {
     let errMsg = `${error.status} - ${error.statusText || ''}`;
