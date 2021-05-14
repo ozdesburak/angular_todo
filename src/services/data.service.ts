@@ -16,6 +16,11 @@ export class DataService {
     private requestService:RequestService) { }
 
 
+  /**
+   * Get user list
+   * No parameters
+   * @returns  Get user list
+   */  
   findAllUser(): Observable<Array<User>> {
       return this.http.get<Array<User>>(`${environment.api}/users`).pipe(
         tap(),
@@ -23,6 +28,11 @@ export class DataService {
      )
   }
   
+  /**
+   * Get todo list
+   * No parameters
+   * @returns  Get todo list
+   */
   findAllTodo(): Observable<Array<Todo>> {
       return this.http.get<Array<Todo>>(`${environment.api}/todos`).pipe(
         tap(),
@@ -30,6 +40,12 @@ export class DataService {
       );
   }    
 
+  /**
+   * Update
+   * @param id
+   * @param params
+   * @returns  Selected item
+   */
   patch(id:any, params:any){
     return this.requestService.patch(environment.api+'/todos/:'+ id, params).pipe(
       tap(),
@@ -37,13 +53,18 @@ export class DataService {
     );
   }
 
+  /**
+   * Delete
+   * @param id
+   * @param params
+   * @returns  ok
+   */
   delete(id:any, params:any) {
     return this.requestService.delete(environment.api+'/todos/:'+ id).pipe(
       tap(),
       catchError(this.handleError)
     );
   }
-
 
   private handleError (error: Response | any) {
     let errMsg = `${error.status} - ${error.statusText || ''}`;
